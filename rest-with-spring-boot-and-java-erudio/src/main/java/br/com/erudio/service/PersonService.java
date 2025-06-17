@@ -1,10 +1,12 @@
 package br.com.erudio.service;
 
 import br.com.erudio.data.dto.V1.PersonDTO;
+import br.com.erudio.data.dto.V2.PersonDTOV2;
 import br.com.erudio.exception.ResourceNotFoundException;
 import static br.com.erudio.mapper.ObjectMapper.parseListObjects;
 import static br.com.erudio.mapper.ObjectMapper.parseObject;
 
+import br.com.erudio.mapper.custom.PersonMapper;
 import br.com.erudio.model.Person;
 import br.com.erudio.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class PersonService {
     @Autowired
     PersonRepository repository;
 
+    @Autowired
+    PersonMapper mapper;
+
     public List<PersonDTO> findAll(){
         return parseListObjects(repository.findAll(), PersonDTO.class);
     }
@@ -38,6 +43,12 @@ public class PersonService {
         var entity = parseObject(person, PersonDTO.class);
 
         return parseObject(entity, PersonDTO.class);
+    }
+
+    public PersonDTOV2 createV2(PersonDTOV2 person){
+        var entity = mapper.convertDTOToEntity(person);
+
+        return mapper.convertEntityToDTO(repository.save(entity));
     }
 
     public void delete(long id){
